@@ -38,8 +38,15 @@ class CalcController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = .systemPink
         self.setup()
+        
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
+        
+        self.viewModel.updateViews = { [weak self] in
+            DispatchQueue.main.async { [weak self] in
+                self?.collectionView.reloadData()
+            }
+        }
     }
     
     //MARK: - UI Setup
@@ -73,15 +80,18 @@ extension CalcController: UICollectionViewDelegate, UICollectionViewDataSource, 
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         
+        //Cell Spacing
         let totalCellHeight = view.frame.size.width
         let totalVerticalCellSpacing = CGFloat(10*4)
         
+        //Screen height
         let window = view.window?.windowScene?.keyWindow
         let topPadding = window?.safeAreaInsets.top ?? 0
         let bottomPadding = window?.safeAreaInsets.bottom ?? 0
         
         let avaliableScreenHeight = view.frame.size.height - topPadding - bottomPadding
         
+        //Cell Header Height
         let headerHeight = avaliableScreenHeight - totalCellHeight - totalVerticalCellSpacing
         
         return CGSize(width: view.frame.size.width, height: headerHeight)
@@ -99,6 +109,12 @@ extension CalcController: UICollectionViewDelegate, UICollectionViewDataSource, 
         
         let calcButton = self.viewModel.calcButtonCells[indexPath.row]
         cell.congigure(with: calcButton)
+        
+        if let operation = self.viewModel.operation, self.viewModel.secondNumber == nil {
+            if operation.title == calcButton.title {
+                cell.setOperationSelected()
+            }
+        }
         
         return cell
     }
@@ -132,6 +148,6 @@ extension CalcController: UICollectionViewDelegate, UICollectionViewDataSource, 
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let buttonCell = self.viewModel.calcButtonCells[indexPath.row]
-        print(buttonCell.title)
+        self.viewModel.didSelectButton(with: buttonCell)
     }
 }
