@@ -20,7 +20,6 @@ class CalcHeaderCell: UICollectionReusableView {
         label.text = "Error"
         return label
     }()
-
     
     //MARK: - livecycle
     override init(frame: CGRect) {
@@ -49,6 +48,4 @@ class CalcHeaderCell: UICollectionReusableView {
             self.label.bottomAnchor.constraint(equalTo: self.layoutMarginsGuide.bottomAnchor),
         ])
     }
-    
-    
 }
